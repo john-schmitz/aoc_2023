@@ -40,8 +40,6 @@ func lineParse(line string) (int, error) {
 						first_num = numbers[k]
 					}
 					second_num = numbers[k]
-
-					index += len(k) - 1
 					break
 				}
 			}

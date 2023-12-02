@@ -35,6 +35,7 @@ func TestLineParse(t *testing.T) {
 		{"4nineeightseven2", 42},
 		{"zoneight234", 14},
 		{"7pqrstsixteen", 76},
+		{"sixgf2sssrzvqlsm9one26twonedzq", 61},
 	}
 
 	for _, test_case := range test_cases {
