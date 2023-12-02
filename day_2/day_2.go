@@ -137,10 +137,3 @@ func fewests_cubes_needed(line string) (int, error) {
 
 	return total, nil
 }
-
-func max(a, b int) int {
-	if a > b {
-		return a
-	}
-	return b
-}
