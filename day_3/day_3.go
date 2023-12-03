@@ -36,35 +36,18 @@ func isPointSymbol(board [][]string, point Point) bool {
 }
 
 func IsPointAdjacentToSymbol(board [][]string, point Point) bool {
-	if isPointSymbol(board, Point{point.i - 1, point.j - 1}) {
-		return true
-	}
-	if isPointSymbol(board, Point{point.i - 1, point.j}) {
-		return true
-	}
-	if isPointSymbol(board, Point{point.i - 1, point.j + 1}) {
-		return true
-	}
-	if isPointSymbol(board, Point{point.i, point.j - 1}) {
-		return true
-	}
-	if isPointSymbol(board, Point{point.i, point.j}) {
-		return true
-	}
-	if isPointSymbol(board, Point{point.i, point.j + 1}) {
-		return true
-	}
-	if isPointSymbol(board, Point{point.i + 1, point.j - 1}) {
-		return true
-	}
-	if isPointSymbol(board, Point{point.i + 1, point.j}) {
-		return true
-	}
+	for i := -1; i <= 1; i++ {
+		for j := -1; j <= 1; j++ {
+			if i == 0 && j == 0 {
+				continue
+			}
 
-	if isPointSymbol(board, Point{point.i + 1, point.j + 1}) {
-		return true
+			neighbor := Point{point.i + i, point.j + j}
+			if isPointSymbol(board, neighbor) {
+				return true
+			}
+		}
 	}
-
 	return false
 }
 
@@ -193,40 +176,37 @@ func SumGearRatios(input_path string) int {
 	return total
 }
 
+func isPointDigit(board [][]string, point Point) bool {
+	if !isPointInBoard(board, point) {
+		return false
+	}
+
+	x := board[point.i][point.j]
+	if _, err := strconv.Atoi(x); err == nil {
+		return true
+	}
+
+	return false
+}
+
 func getNumbers(board [][]string) []Range {
 	numbers := make([]Range, 0)
 
 	for index, line := range board {
-		currently_parsing_number := false
 		current_number := ""
-
-		last_index := len(line) - 1
 		for jindex, char := range line {
-			if _, err := strconv.Atoi(char); err == nil {
-				currently_parsing_number = true
+			if isPointDigit(board, Point{index, jindex}) {
 				current_number += char
+				is_next_point_digit := isPointDigit(board, Point{index, jindex + 1})
 
-				if last_index == jindex {
+				if !is_next_point_digit {
 					start_point := Point{index, jindex - len(current_number) + 1}
 					end_point := Point{index, jindex}
 
 					numbers = append(numbers, Range{start_point, end_point})
 
-					currently_parsing_number = false
 					current_number = ""
 				}
-				continue
-			}
-
-			if currently_parsing_number {
-
-				start_point := Point{index, jindex - len(current_number)}
-				end_point := Point{index, jindex - 1}
-
-				numbers = append(numbers, Range{start_point, end_point})
-
-				currently_parsing_number = false
-				current_number = ""
 			}
 		}
 	}
