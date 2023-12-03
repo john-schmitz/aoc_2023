@@ -214,8 +214,6 @@ func getNumbers(board [][]string) []Range {
 
 					currently_parsing_number = false
 					current_number = ""
-				} else {
-					continue
 				}
 			}
 
