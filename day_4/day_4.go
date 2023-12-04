@@ -83,10 +83,6 @@ func PartOne(file_path string) int {
 	return total_sum
 }
 
-func ProcessCopies() {
-
-}
-
 type Card struct {
 	id          int
 	owned_count int
