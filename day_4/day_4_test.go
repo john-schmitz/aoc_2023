@@ -17,7 +17,7 @@ func TestParseGame(t *testing.T) {
 	}
 
 	for _, tc := range test_cases {
-		got := parseGame(tc.input)
+		_, got := parseGame(tc.input)
 		if got != tc.want {
 			t.Errorf("parseGame(%q) = %d; want %d", tc.input, got, tc.want)
 		}
@@ -50,8 +50,27 @@ func TestPartTwoSample(t *testing.T) {
 
 func TestPartTwoInput(t *testing.T) {
 	got := PartTwo("input.txt")
-	want := 0
+	want := 5704953
 	if got != want {
 		t.Errorf("PartTwo(input.txt) = %d; want %d", got, want)
+	}
+}
+
+func TestPlayCard(t *testing.T) {
+	card := Card{owned_count: 1, won_count: 2}
+	cards := []Card{card, card, card, card}
+	expected_cards := []Card{
+		{owned_count: 1, won_count: 2},
+		{owned_count: 2, won_count: 2},
+		{owned_count: 2, won_count: 2},
+		{owned_count: 1, won_count: 2},
+	}
+
+	cards = playCard(card, 0, cards)
+
+	for index, card := range cards {
+		if card != expected_cards[index] {
+			t.Errorf("playCard(%v, %d, %v) = %v; want %v", card, 0, cards, cards, expected_cards)
+		}
 	}
 }

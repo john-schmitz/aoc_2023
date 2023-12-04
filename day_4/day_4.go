@@ -32,7 +32,7 @@ func removeEmptyStrings(s []string) []string {
 	return r
 }
 
-func parseGame(line string) int {
+func parseGame(line string) (int, int) {
 	a := strings.Split(line, ":")
 
 	numbers := strings.Split(a[1], "|")
@@ -42,8 +42,6 @@ func parseGame(line string) int {
 
 	winning_numbers_map := make(map[string]bool)
 	owned_numbers_map := make(map[string]bool)
-
-	// filter empty strings
 
 	for _, v := range winning_numbers {
 		winning_numbers_map[v] = true
@@ -55,16 +53,13 @@ func parseGame(line string) int {
 
 	intersection := getIntersection(winning_numbers_map, owned_numbers_map)
 
-	intersection_length := len(intersection)
-	if intersection_length == 0 {
-		return 0
+	numbers_won := len(intersection)
+
+	if numbers_won < 1 {
+		return numbers_won, numbers_won
 	}
 
-	if intersection_length == 1 {
-		return 1
-	}
-
-	return int(math.Pow(float64(2), float64(intersection_length-1)))
+	return numbers_won, int(math.Pow(float64(2), float64(numbers_won-1)))
 }
 
 func PartOne(file_path string) int {
@@ -79,7 +74,8 @@ func PartOne(file_path string) int {
 	fileScanner.Split(bufio.ScanLines)
 	for fileScanner.Scan() {
 		line := fileScanner.Text()
-		total_sum += parseGame(line)
+		_, points := parseGame(line)
+		total_sum += points
 	}
 
 	readFile.Close()
@@ -87,9 +83,22 @@ func PartOne(file_path string) int {
 	return total_sum
 }
 
+func ProcessCopies() {
+
+}
+
+type Card struct {
+	id          int
+	owned_count int
+	won_count   int
+}
+
 func PartTwo(file_path string) int {
 	total_sum := 0
 	readFile, err := os.Open(file_path)
+	line_count := 0
+
+	cards := make([]Card, 0)
 
 	if err != nil {
 		fmt.Println(err)
@@ -99,10 +108,34 @@ func PartTwo(file_path string) int {
 	fileScanner.Split(bufio.ScanLines)
 	for fileScanner.Scan() {
 		line := fileScanner.Text()
-		total_sum += parseGame(line)
+		won_count, _ := parseGame(line)
+		cards = append(cards, Card{owned_count: 1, won_count: won_count, id: line_count + 1})
+		line_count += 1
+
+	}
+
+	for index, card := range cards {
+		cards = playCard(card, index, cards)
+	}
+
+	for _, card := range cards {
+		total_sum += card.owned_count
 	}
 
 	readFile.Close()
 
 	return total_sum
+}
+
+func playCard(card Card, index int, cards []Card) []Card {
+	if card.won_count == 0 {
+		return cards
+	}
+
+	for a := 0; a < card.owned_count; a++ {
+		for i := 0; i < card.won_count; i++ {
+			cards[index+i+1].owned_count += 1
+		}
+	}
+	return cards
 }
