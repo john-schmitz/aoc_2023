@@ -113,24 +113,17 @@ func PartTwo(file_path string) int {
 	seeds, steps, err := parseInput(file_path)
 
 	seeds = convertSeedsToRanges(seeds)
-	seed_steps := make([][]int, len(seeds))
-
-	for i, seed := range seeds {
-		seed_steps[i] = make([]int, len(steps)+1)
-		seed_steps[i][0] = seed
-	}
 
 	if err != nil {
 		panic(err)
 	}
 
-	for step_index, step := range steps {
+	for _, step := range steps {
 	seed_label:
 		for index, seed := range seeds {
 			for _, ranges := range step {
 				maped_seed := mapRange(seed, ranges)
 				seeds[index] = maped_seed
-				seed_steps[index][step_index+1] = maped_seed
 				if seed != maped_seed {
 					continue seed_label
 				}
@@ -138,9 +131,8 @@ func PartTwo(file_path string) int {
 		}
 	}
 
-	for _, seed := range seed_steps {
-		last_step := seed[len(seed)-1]
-		lowest_location_number = min(last_step, lowest_location_number)
+	for _, seed := range seeds {
+		lowest_location_number = min(seed, lowest_location_number)
 	}
 
 	return lowest_location_number
