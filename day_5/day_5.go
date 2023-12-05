@@ -62,7 +62,7 @@ func readSeedsFromInput(line string) []int {
 }
 
 func mapRange(id int, ranges Ranges) int {
-	is_in_range := ranges.source_range <= id && ranges.source_range+ranges.range_length >= id
+	is_in_range := ranges.source_range <= id && ranges.source_range+ranges.range_length > id
 
 	if is_in_range {
 		return ranges.destination_range + (id - ranges.source_range)
@@ -112,27 +112,28 @@ func PartTwo(file_path string) int {
 	lowest_location_number := math.MaxInt
 	seeds, steps, err := parseInput(file_path)
 
-	seeds = convertSeedsToRanges(seeds)
-
 	if err != nil {
 		panic(err)
 	}
 
-	for _, step := range steps {
-	seed_label:
-		for index, seed := range seeds {
-			for _, ranges := range step {
-				maped_seed := mapRange(seed, ranges)
-				seeds[index] = maped_seed
-				if seed != maped_seed {
-					continue seed_label
+	for i := 0; i < len(seeds); i = i + 2 {
+		start := seeds[i]
+		length := seeds[i+1]
+
+		for j := 0; j < length; j++ {
+			value := start + j
+			for _, step := range steps {
+				for _, ranges := range step {
+					mapped_value := mapRange(value, ranges)
+					if value != mapped_value {
+						value = mapped_value
+						break
+					}
 				}
 			}
-		}
-	}
 
-	for _, seed := range seeds {
-		lowest_location_number = min(seed, lowest_location_number)
+			lowest_location_number = min(value, lowest_location_number)
+		}
 	}
 
 	return lowest_location_number

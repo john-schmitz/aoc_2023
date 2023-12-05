@@ -74,6 +74,8 @@ func TestMapRange(t *testing.T) {
 		{98, Ranges{50, 98, 2}, 50},
 		{53, Ranges{52, 50, 48}, 55},
 		{13, Ranges{52, 50, 48}, 13},
+		{20, Ranges{52, 10, 10}, 20},
+		{19, Ranges{52, 10, 10}, 61},
 	}
 
 	for _, test_case := range test_cases {
