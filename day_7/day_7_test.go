@@ -11,25 +11,25 @@ func Test(t *testing.T) {
 	}{
 		{
 			line:     "23456 765",
-			expected: Hand{bid: 765, cards: "23456", strength: HighCard},
+			expected: Hand{bid: 765, cards: "23456"},
 		}, {
 			line:     "32T3K 765",
-			expected: Hand{bid: 765, cards: "32T3K", strength: OnePair},
+			expected: Hand{bid: 765, cards: "32T3K"},
 		}, {
 			line:     "23432 765",
-			expected: Hand{bid: 765, cards: "23432", strength: TwoPair},
+			expected: Hand{bid: 765, cards: "23432"},
 		}, {
 			line:     "TTT98 765",
-			expected: Hand{bid: 765, cards: "TTT98", strength: ThreeOfaKind},
+			expected: Hand{bid: 765, cards: "TTT98"},
 		}, {
 			line:     "23332 765",
-			expected: Hand{bid: 765, cards: "23332", strength: FullHouse},
+			expected: Hand{bid: 765, cards: "23332"},
 		}, {
 			line:     "AAAA8 765",
-			expected: Hand{bid: 765, cards: "AAAA8", strength: FourOfAKind},
+			expected: Hand{bid: 765, cards: "AAAA8"},
 		}, {
 			line:     "AAAAA 765",
-			expected: Hand{bid: 765, cards: "AAAAA", strength: FiveOfAKind},
+			expected: Hand{bid: 765, cards: "AAAAA"},
 		},
 	}
 	for _, tC := range testCases {
@@ -44,35 +44,50 @@ func Test(t *testing.T) {
 }
 
 func TestComparison(t *testing.T) {
+	card_strengths := map[rune]int{
+		rune('A'): 12,
+		rune('K'): 11,
+		rune('Q'): 10,
+		rune('J'): 9,
+		rune('T'): 8,
+		rune('9'): 7,
+		rune('8'): 6,
+		rune('7'): 5,
+		rune('6'): 4,
+		rune('5'): 3,
+		rune('4'): 2,
+		rune('3'): 1,
+		rune('2'): 0,
+	}
 	testCases := []struct {
 		hand     Hand
 		hand2    Hand
 		expected bool
 	}{
 		{
-			hand:     Hand{bid: 765, cards: "12345", strength: HighCard},
-			hand2:    Hand{bid: 765, cards: "AAAA8", strength: FourOfAKind},
+			hand:     Hand{bid: 765, cards: "12345"},
+			hand2:    Hand{bid: 765, cards: "AAAA8"},
 			expected: true,
 		},
 		{
-			hand:     Hand{bid: 765, cards: "KKKKK", strength: FiveOfAKind},
-			hand2:    Hand{bid: 765, cards: "AAAAA", strength: FiveOfAKind},
+			hand:     Hand{bid: 765, cards: "KKKKK"},
+			hand2:    Hand{bid: 765, cards: "AAAAA"},
 			expected: true,
 		},
 		{
-			hand:     Hand{bid: 765, cards: "AAAAA", strength: FiveOfAKind},
-			hand2:    Hand{bid: 765, cards: "KKKKK", strength: FiveOfAKind},
+			hand:     Hand{bid: 765, cards: "AAAAA"},
+			hand2:    Hand{bid: 765, cards: "KKKKK"},
 			expected: false,
 		},
 		{
-			hand:     Hand{bid: 765, cards: "KTJJT", strength: FiveOfAKind},
-			hand2:    Hand{bid: 765, cards: "KK677", strength: FiveOfAKind},
+			hand:     Hand{bid: 765, cards: "KTJJT"},
+			hand2:    Hand{bid: 765, cards: "KK677"},
 			expected: true,
 		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.hand.cards, func(t *testing.T) {
-			actual := compareHands(tC.hand, tC.hand2)
+			actual := compareHands(tC.hand, tC.hand2, card_strengths)
 			if actual != tC.expected {
 				t.Errorf("Expected compareHands(%v, %v) = %t. Got %t", tC.hand, tC.hand2, tC.expected, actual)
 			}
@@ -96,6 +111,29 @@ func TestPartOne(t *testing.T) {
 	for _, tC := range testCases {
 		t.Run(tC.file_path, func(t *testing.T) {
 			actual := PartOne(tC.file_path)
+			if actual != tC.expected {
+				t.Errorf("Expected PartOne(%s) = %d. Got %d", tC.file_path, tC.expected, actual)
+			}
+		})
+	}
+}
+
+func TestPartTwo(t *testing.T) {
+	testCases := []struct {
+		file_path string
+		expected  int
+	}{
+		{
+			file_path: "sample.txt",
+			expected:  5905,
+		}, {
+			file_path: "input.txt",
+			expected:  251545216,
+		},
+	}
+	for _, tC := range testCases {
+		t.Run(tC.file_path, func(t *testing.T) {
+			actual := PartTwo(tC.file_path)
 			if actual != tC.expected {
 				t.Errorf("Expected PartOne(%s) = %d. Got %d", tC.file_path, tC.expected, actual)
 			}
