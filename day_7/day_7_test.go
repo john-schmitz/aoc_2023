@@ -99,13 +99,14 @@ func TestJokerHandStrength(t *testing.T) {
 	testCases := []struct {
 		cards    string
 		expected Strength
-	}{{
-		cards:    "KTJJT",
-		expected: FourOfAKind,
-	}, {
-		cards:    "JJJJA",
-		expected: FiveOfAKind,
-	},
+	}{
+		{
+			cards:    "KTJJT",
+			expected: FourOfAKind,
+		}, {
+			cards:    "JJJJA",
+			expected: FiveOfAKind,
+		},
 		{
 			cards:    "JJJJJ",
 			expected: FiveOfAKind,

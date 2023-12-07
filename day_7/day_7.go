@@ -2,6 +2,7 @@ package day7
 
 import (
 	"bufio"
+	"math"
 	"os"
 	"sort"
 	"strconv"
@@ -46,52 +47,19 @@ func jokerHandStrength(cards string) Strength {
 	}
 
 	map_of_occurrences := make(map[rune]int)
+	max_occurrence := math.MinInt
+	char_max := rune('Z')
+
 	for _, char := range cards {
-		map_of_occurrences[char] = map_of_occurrences[char] + 1
+		occ := map_of_occurrences[char] + 1
+		map_of_occurrences[char] = occ
+		if occ > max_occurrence && char != rune('J') {
+			max_occurrence = occ
+			char_max = char
+		}
 	}
 
-	joker_count := map_of_occurrences[rune('J')]
-	map_size := len(map_of_occurrences)
-	if map_size == 5 {
-		return OnePair
-	}
-
-	if map_size == 4 {
-		pair_count := 0
-		for _, v := range map_of_occurrences {
-			if v == 2 {
-				pair_count++
-			}
-		}
-
-		if pair_count == 1 {
-			return ThreeOfaKind
-		}
-		return OnePair
-	}
-
-	if map_size == 1 || map_size == 2 {
-		return FiveOfAKind
-	}
-
-	if map_size == 3 {
-		pair_count := 0
-		for _, v := range map_of_occurrences {
-			if v == 2 {
-				pair_count++
-			}
-		}
-
-		if pair_count == 2 && joker_count == 2 {
-			return FourOfAKind
-		}
-
-		if pair_count == 2 {
-			return FullHouse
-		}
-		return FourOfAKind
-	}
-	panic("Invalid strength")
+	return handStrength(strings.ReplaceAll(cards, "J", string(char_max)))
 }
 
 func handStrength(cards string) Strength {
