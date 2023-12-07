@@ -40,6 +40,60 @@ func getLines(path string) ([]string, error) {
 	return lines, scanner.Err()
 }
 
+func jokerHandStrength(cards string) Strength {
+	if !strings.Contains(cards, "J") {
+		return handStrength(cards)
+	}
+
+	map_of_occurrences := make(map[rune]int)
+	for _, char := range cards {
+		map_of_occurrences[char] = map_of_occurrences[char] + 1
+	}
+
+	joker_count := map_of_occurrences[rune('J')]
+	map_size := len(map_of_occurrences)
+	if map_size == 5 {
+		return OnePair
+	}
+
+	if map_size == 4 {
+		pair_count := 0
+		for _, v := range map_of_occurrences {
+			if v == 2 {
+				pair_count++
+			}
+		}
+
+		if pair_count == 1 {
+			return ThreeOfaKind
+		}
+		return OnePair
+	}
+
+	if map_size == 1 || map_size == 2 {
+		return FiveOfAKind
+	}
+
+	if map_size == 3 {
+		pair_count := 0
+		for _, v := range map_of_occurrences {
+			if v == 2 {
+				pair_count++
+			}
+		}
+
+		if pair_count == 2 && joker_count == 2 {
+			return FourOfAKind
+		}
+
+		if pair_count == 2 {
+			return FullHouse
+		}
+		return FourOfAKind
+	}
+	panic("Invalid strength")
+}
+
 func handStrength(cards string) Strength {
 	map_of_occurrences := make(map[rune]int)
 	for _, char := range cards {
@@ -100,6 +154,25 @@ func parseLine(line string) Hand {
 func compareHands(hand1, hand2 Hand, card_strengths map[rune]int) bool {
 	hand1_strength := handStrength(hand1.cards)
 	hand2_strength := handStrength(hand2.cards)
+
+	if hand1_strength == hand2_strength {
+		for index := range hand1.cards {
+			rune_1 := rune(hand1.cards[index])
+			rune_2 := rune(hand2.cards[index])
+			if card_strengths[rune_1] == card_strengths[rune_2] {
+				continue
+			}
+
+			return card_strengths[rune_1] < card_strengths[rune_2]
+		}
+	}
+
+	return hand1_strength < hand2_strength
+}
+
+func compareHandsJoker(hand1, hand2 Hand, card_strengths map[rune]int) bool {
+	hand1_strength := jokerHandStrength(hand1.cards)
+	hand2_strength := jokerHandStrength(hand2.cards)
 
 	if hand1_strength == hand2_strength {
 		for index := range hand1.cards {
@@ -182,7 +255,7 @@ func PartTwo(input_path string) int {
 	}
 
 	sort.SliceStable(hands, func(i, j int) bool {
-		return compareHands(hands[i], hands[j], card_strengths)
+		return compareHandsJoker(hands[i], hands[j], card_strengths)
 	})
 
 	total_bids := 0
