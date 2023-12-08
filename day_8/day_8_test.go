@@ -1,4 +1,4 @@
-package day8
+package main
 
 import (
 	"testing"
@@ -15,7 +15,7 @@ func TestPartOne(t *testing.T) {
 		},
 		{
 			file_path: "input.txt",
-			expected:  2,
+			expected:  19637,
 		},
 	}
 	for _, tC := range testCases {
@@ -25,6 +25,52 @@ func TestPartOne(t *testing.T) {
 				t.Errorf("Expected PartOne(%s) = %d. Got %d", tC.file_path, tC.expected, actual)
 			}
 		})
+	}
+}
+
+func TestPartTwo(t *testing.T) {
+	testCases := []struct {
+		file_path string
+		expected  int
+	}{
+		{
+			file_path: "sample2.txt",
+			expected:  6,
+		},
+		// {
+		// 	file_path: "input.txt",
+		// 	expected:  0,
+		// },
+	}
+
+	for _, tC := range testCases {
+		t.Run(tC.file_path, func(t *testing.T) {
+			actual := PartTwo(tC.file_path)
+			if actual != tC.expected {
+				t.Errorf("Expected PartTwo(%s) = %d. Got %d", tC.file_path, tC.expected, actual)
+			}
+		})
+	}
+}
+
+func Test(t *testing.T) {
+	testCases := []struct {
+		input    []string
+		expected bool
+	}{
+		{
+			input:    []string{"AZZ", "ZZZ", "TTZ"},
+			expected: true,
+		}, {
+			input:    []string{"AZB", "ZZZ", "TTZ"},
+			expected: false,
+		},
+	}
+	for _, tC := range testCases {
+		actual := canFinish(tC.input)
+		if actual != tC.expected {
+			t.Errorf("Expected canFinish(%v) = %t. Got %t", tC.input, tC.expected, actual)
+		}
 	}
 }
 

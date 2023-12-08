@@ -1,7 +1,8 @@
-package day8
+package main
 
 import (
 	"bufio"
+	"fmt"
 	"os"
 	"strings"
 )
@@ -89,27 +90,42 @@ func PartTwo(input_path string) int {
 	}
 
 	map_nodes := make(map[string]Node)
+	current_nodes := make([]Node, 0)
+	current_keys := make([]string, 0)
 
 	for _, v := range lines[2:] {
 		key, node := parseLine(v)
 		map_nodes[key] = node
+		if strings.HasSuffix(key, "A") {
+			current_nodes = append(current_nodes, node)
+			current_keys = append(current_keys, key)
+		}
 	}
 
 	i := 0
 	steps := 0
 	instructions := lines[0]
-	current_node := map_nodes["AAA"]
-	current_key := "AAA"
+	fmt.Println(current_keys)
+	fmt.Println(current_nodes)
+
 	for {
 
 		v := rune(instructions[i])
-		if v == rune('L') {
-			current_key = current_node.left
-		} else if v == rune('R') {
-			current_key = current_node.right
-		} else {
-			panic("Invalid instruction")
+		new_keys := make([]string, len(current_keys))
+		for i, current_key := range current_keys {
+			current_node := current_nodes[i]
+			if v == rune('L') {
+				current_key = current_node.left
+			} else if v == rune('R') {
+				current_key = current_node.right
+			} else {
+				panic("Invalid instruction")
+			}
+			new_keys[i] = current_key
+			current_nodes[i] = map_nodes[current_key]
 		}
+
+		current_keys = new_keys
 
 		if i < len(instructions)-1 {
 			i++
@@ -118,11 +134,21 @@ func PartTwo(input_path string) int {
 		}
 
 		steps++
-		current_node = map_nodes[current_key]
-		if current_key == "ZZZ" {
+		if canFinish(current_keys) {
 			break
 		}
 	}
 
 	return steps
+}
+
+func canFinish(input []string) bool {
+
+	for _, v := range input {
+		if !strings.HasSuffix(v, "Z") {
+			return false
+		}
+	}
+
+	return true
 }
