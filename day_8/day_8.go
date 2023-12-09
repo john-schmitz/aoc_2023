@@ -32,6 +32,27 @@ func allZeros(history []int) bool {
 	return true
 }
 
+func lastValueInHistory(history []int) int {
+	if allZeros(history) {
+		return 0
+	}
+
+	new_history := make([]int, len(history)-1)
+
+	for i := 0; i < len(history)-1; i++ {
+		current := history[i]
+		next := history[i+1]
+
+		new_history[i] = next - current
+	}
+
+	first_value := history[0]
+	last_value_history := lastValueInHistory(new_history)
+	new_first_value := first_value - last_value_history
+
+	return new_first_value
+}
+
 func nextValueInHistory(history []int) int {
 	if allZeros(history) {
 		return 0
@@ -73,6 +94,18 @@ func PartOne(input_path string) int {
 
 	for _, line := range lines {
 		acc = acc + nextValueInHistory(parseLine(line))
+	}
+
+	return acc
+}
+
+func PartTwo(input_path string) int {
+	lines, _ := getLines(input_path)
+
+	acc := 0
+
+	for _, line := range lines {
+		acc = acc + lastValueInHistory(parseLine(line))
 	}
 
 	return acc
