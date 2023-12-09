@@ -24,7 +24,7 @@ func TestNextValueHistory(t *testing.T) {
 		},
 		{
 			history: []int{
-				0, 3, 6, 9, 12, 15,
+				10, 13, 16, 21, 30, 45,
 			},
 			expected: 68,
 		},
@@ -78,6 +78,10 @@ func TestPartOne(t *testing.T) {
 		{
 			input_path: "sample.txt",
 			expected:   114,
+		},
+		{
+			input_path: "input.txt",
+			expected:   1842168671,
 		},
 	}
 	for _, tC := range testCases {

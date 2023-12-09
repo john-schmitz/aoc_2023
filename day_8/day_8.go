@@ -23,7 +23,7 @@ func getLines(path string) ([]string, error) {
 }
 
 func allZeros(history []int) bool {
-	for v := range history {
+	for _, v := range history {
 		if v != 0 {
 			return false
 		}
@@ -37,18 +37,17 @@ func nextValueInHistory(history []int) int {
 		return 0
 	}
 
-	new_slice := make([]int, len(history)-1)
+	last_value := history[len(history)-1]
+	new_history := make([]int, len(history)-1)
 
 	for i := 0; i < len(history)-1; i++ {
 		current := history[i]
 		next := history[i+1]
 
-		new_slice[i] = next - current
+		new_history[i] = next - current
 	}
 
-	
-
-	return 0
+	return nextValueInHistory(new_history) + last_value
 }
 
 func parseLine(line string) []int {
@@ -70,5 +69,11 @@ func parseLine(line string) []int {
 func PartOne(input_path string) int {
 	lines, _ := getLines(input_path)
 
-	return len(lines)
+	acc := 0
+
+	for _, line := range lines {
+		acc = acc + nextValueInHistory(parseLine(line))
+	}
+
+	return acc
 }
