@@ -37,10 +37,10 @@ func TestPartTwo(t *testing.T) {
 			file_path: "sample2.txt",
 			expected:  6,
 		},
-		// {
-		// 	file_path: "input.txt",
-		// 	expected:  0,
-		// },
+		{
+			file_path: "input.txt",
+			expected:  0,
+		},
 	}
 
 	for _, tC := range testCases {

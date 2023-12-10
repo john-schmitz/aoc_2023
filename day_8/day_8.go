@@ -92,6 +92,7 @@ func PartTwo(input_path string) int {
 	map_nodes := make(map[string]Node)
 	current_nodes := make([]Node, 0)
 	current_keys := make([]string, 0)
+	instructions := lines[0]
 
 	for _, v := range lines[2:] {
 		key, node := parseLine(v)
@@ -102,30 +103,50 @@ func PartTwo(input_path string) int {
 		}
 	}
 
+	steps := make([]int, 0)
+	for _, key := range current_keys {
+		curr := stepsToFindFirstZ(map_nodes, key, instructions)
+		steps = append(steps, curr)
+		fmt.Printf("%d steps to find first z for key %s \n", curr, key)
+	}
+
+	return LCM(steps[0], steps[1], steps...)
+}
+
+func GCD(a, b int) int {
+	for b != 0 {
+		t := b
+		b = a % b
+		a = t
+	}
+	return a
+}
+
+func LCM(a, b int, integers ...int) int {
+	result := a * b / GCD(a, b)
+
+	for i := 0; i < len(integers); i++ {
+		result = LCM(result, integers[i])
+	}
+
+	return result
+}
+
+func stepsToFindFirstZ(map_nodes map[string]Node, start_key string, instructions string) int {
 	i := 0
 	steps := 0
-	instructions := lines[0]
-	fmt.Println(current_keys)
-	fmt.Println(current_nodes)
-
+	current_node := map_nodes[start_key]
+	current_key := start_key
 	for {
 
 		v := rune(instructions[i])
-		new_keys := make([]string, len(current_keys))
-		for i, current_key := range current_keys {
-			current_node := current_nodes[i]
-			if v == rune('L') {
-				current_key = current_node.left
-			} else if v == rune('R') {
-				current_key = current_node.right
-			} else {
-				panic("Invalid instruction")
-			}
-			new_keys[i] = current_key
-			current_nodes[i] = map_nodes[current_key]
+		if v == rune('L') {
+			current_key = current_node.left
+		} else if v == rune('R') {
+			current_key = current_node.right
+		} else {
+			panic("Invalid instruction")
 		}
-
-		current_keys = new_keys
 
 		if i < len(instructions)-1 {
 			i++
@@ -134,7 +155,8 @@ func PartTwo(input_path string) int {
 		}
 
 		steps++
-		if canFinish(current_keys) {
+		current_node = map_nodes[current_key]
+		if strings.HasSuffix(current_key, "Z") {
 			break
 		}
 	}
