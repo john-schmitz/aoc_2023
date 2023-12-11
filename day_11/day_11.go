@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"slices"
 	"strings"
 )
 
@@ -13,20 +12,9 @@ type Point struct {
 	j int
 }
 
-func PartOne(file_path string) int {
+func solve(file_path string, increments int) int {
 	lines, _ := getLines(file_path)
-	lines = transposeBoard(lines, 2)
-	galaxies := make([]Point, 0)
-
-	for i := 0; i < len(lines); i++ {
-		for j := 0; j < len(lines[0]); j++ {
-			element := string(lines[i][j])
-			if element == "#" {
-				galaxies = append(galaxies, Point{i, j})
-			}
-		}
-	}
-	fmt.Println("Found galaxies: ", len(galaxies))
+	galaxies := transposeBoard(lines, increments)
 
 	distances_map := map[string]int{}
 	expected_pairs := len(galaxies) * (len(galaxies) - 1) / 2
@@ -74,6 +62,14 @@ func PartOne(file_path string) int {
 	return acc
 }
 
+func PartOne(file_path string) int {
+	return solve(file_path, 2)
+}
+
+func PartTwo(file_path string) int {
+	return solve(file_path, 1000000)
+}
+
 func getLines(path string) ([]string, error) {
 	file, err := os.Open(path)
 	if err != nil {
@@ -89,11 +85,7 @@ func getLines(path string) ([]string, error) {
 	return lines, scanner.Err()
 }
 
-func IsPointInBoard(p Point, board []string) bool {
-	return p.i >= 0 && p.j >= 0 && p.i < len(board) && p.j < len(board[p.i])
-}
-
-func transposeBoard(lines []string, increment int) []string {
+func transposeBoard(lines []string, increment int) []Point {
 	rows_with_no_galaxies := make([]int, 0)
 	columns_with_no_galaxies := make([]int, 0)
 	for row_index, row := range lines {
@@ -112,28 +104,29 @@ func transposeBoard(lines []string, increment int) []string {
 		}
 	}
 
-	empty_row := strings.Repeat(".", len(lines[0]))
-	rows_to_be_added := len(rows_with_no_galaxies)
+	galaxies := make([]Point, 0)
+	for i := 0; i < len(lines); i++ {
+		for j := 0; j < len(lines[0]); j++ {
+			element := string(lines[i][j])
+			if element == "#" {
+				new_i := i
+				new_j := j
+				for _, v := range rows_with_no_galaxies {
+					if v < i {
+						new_i = new_i + increment - 1
+					}
+				}
 
-	for len(rows_with_no_galaxies) > 0 {
-		row_index := rows_with_no_galaxies[0] + rows_to_be_added - len(rows_with_no_galaxies)
-		rows_with_no_galaxies = rows_with_no_galaxies[1:]
-		for i := 0; i < increment-1; i++ {
-			lines = slices.Insert(lines, row_index, empty_row)
+				for _, v := range columns_with_no_galaxies {
+					if v < j {
+						new_j = new_j + increment - 1
+					}
+				}
+				galaxies = append(galaxies, Point{new_i, new_j})
+			}
 		}
 	}
+	fmt.Println("Found galaxies: ", len(galaxies))
 
-	for index, row := range lines {
-		new_row := row
-
-		for i := 0; i < len(columns_with_no_galaxies); i++ {
-			column_index := i + columns_with_no_galaxies[i]
-			new_value := strings.Repeat(".", increment-1)
-			new_row = new_row[:column_index] + new_value + new_row[column_index:]
-		}
-
-		lines[index] = new_row
-	}
-
-	return lines
+	return galaxies
 }
