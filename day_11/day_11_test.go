@@ -6,12 +6,15 @@ import (
 )
 
 func TestTransposeBoard(t *testing.T) {
+	sample, _ := getLines("sample.txt")
 	testCases := []struct {
 		input_file string
 		expected   []string
+		increment  int
 	}{
 		{
 			input_file: "sample.txt",
+			increment:  2,
 			expected: []string{
 				"....#........",
 				".........#...",
@@ -27,11 +30,16 @@ func TestTransposeBoard(t *testing.T) {
 				"#....#.......",
 			},
 		},
+		{
+			input_file: "sample.txt",
+			increment:  1,
+			expected:   sample,
+		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.input_file, func(t *testing.T) {
 			lines, _ := getLines(tC.input_file)
-			actual := transposeBoard(lines)
+			actual := transposeBoard(lines, tC.increment)
 
 			if len(actual) != len(tC.expected) {
 				t.Errorf("len(actual) = %d. len(tC.expected) = %d", len(actual), len(tC.expected))
@@ -57,10 +65,10 @@ func TestPartOne(t *testing.T) {
 			file_path: "sample.txt",
 			expected:  374,
 		},
-		// {
-		// 	file_path: "input.txt",
-		// 	expected:  374,
-		// },
+		{
+			file_path: "input.txt",
+			expected:  9418609,
+		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.file_path, func(t *testing.T) {
