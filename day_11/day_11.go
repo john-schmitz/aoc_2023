@@ -53,8 +53,18 @@ func transposeBoard(lines []string) []string {
 	for len(rows_with_no_galaxies) > 0 {
 		row_index := rows_with_no_galaxies[0] + rows_to_be_added - len(rows_with_no_galaxies)
 		rows_with_no_galaxies = rows_with_no_galaxies[1:]
-		fmt.Println(row_index, rows_with_no_galaxies)
 		lines = slices.Insert(lines, row_index, empty_row)
+	}
+
+	for index, row := range lines {
+		new_row := row
+
+		for i := 0; i < len(columns_with_no_galaxies); i++ {
+			column_index := i + columns_with_no_galaxies[i]
+			new_row = new_row[:column_index] + "." + new_row[column_index:]
+		}
+
+		lines[index] = new_row
 	}
 
 	return lines
