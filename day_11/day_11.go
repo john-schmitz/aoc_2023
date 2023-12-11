@@ -13,11 +13,11 @@ type Point struct {
 }
 
 func solve(file_path string, increments int) int {
+	acc := 0
 	lines, _ := getLines(file_path)
 	galaxies := transposeBoard(lines, increments)
 
 	distances_map := map[string]int{}
-	expected_pairs := len(galaxies) * (len(galaxies) - 1) / 2
 
 	for _, galaxy := range galaxies {
 		for _, galaxy_ := range galaxies {
@@ -47,19 +47,11 @@ func solve(file_path string, increments int) int {
 				manhattan_j = -manhattan_j
 			}
 
-			distances_map[key] = manhattan_i + manhattan_j
+			acc += manhattan_i + manhattan_j
 		}
 	}
 
-	if len(distances_map) != expected_pairs {
-		panic(fmt.Sprintf("Expected %d pairs, got %d", expected_pairs, len(distances_map)))
-	}
-	acc := 0
-	for _, element := range distances_map {
-		acc += element
-	}
-
-	return acc
+	return acc / 2
 }
 
 func PartOne(file_path string) int {
