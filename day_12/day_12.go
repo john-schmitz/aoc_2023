@@ -41,6 +41,10 @@ func solve(expression string, groups []int) int {
 		return 1
 	}
 
+	if len(groups) == 0 {
+		return 1
+	}
+
 	first_char := string(expression[0])
 	current_group := groups[0]
 
@@ -68,7 +72,7 @@ func solve(expression string, groups []int) int {
 			return solve(x, groups[1:])
 		}
 
-		return solve(x[current_group:], groups[1:])
+		return solve(x[1:], groups[1:])
 	}
 
 	return 0

@@ -2,12 +2,15 @@ package main
 
 import "testing"
 
-
 func TestPossibleArrangements(t *testing.T) {
 	testCases := []struct {
 		line     string
 		expected int
 	}{
+		{
+			line:     "????.#...#... 4,1,1",
+			expected: 1,
+		},
 		{
 			line:     "?.?.### 1,1,3",
 			expected: 1,
@@ -16,26 +19,22 @@ func TestPossibleArrangements(t *testing.T) {
 			line:     "???.### 1,1,3",
 			expected: 1,
 		},
-		// {
-		// 	line:     "????.#...#... 4,1,1",
-		// 	expected: 1,
-		// },
-		// {
-		// 	line:     "????.######..#####. 1,6,5",
-		// 	expected: 4,
-		// },
-		// {
-		// 	line:     ".??..??...?##. 1,1,3",
-		// 	expected: 4,
-		// },
-		// {
-		// 	line:     "?#?#?#?#?#?#?#? 1,3,1,6",
-		// 	expected: 1,
-		// },
-		// {
-		// 	line:     "?###???????? 3,2,1",
-		// 	expected: 10,
-		// },
+		{
+			line:     "????.######..#####. 1,6,5",
+			expected: 4,
+		},
+		{
+			line:     ".??..??...?##. 1,1,3",
+			expected: 4,
+		},
+		{
+			line:     "?#?#?#?#?#?#?#? 1,3,1,6",
+			expected: 1,
+		},
+		{
+			line:     "?###???????? 3,2,1",
+			expected: 10,
+		},
 	}
 
 	for _, tC := range testCases {
