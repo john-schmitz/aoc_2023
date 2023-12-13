@@ -33,49 +33,46 @@ func appendAtStart(s string, value string) string {
 }
 
 func solve(expression string, groups []int) int {
-	if expression == "" && len(groups) > 0 {
-		return 0
-	}
-
-	if expression == "" && len(groups) == 0 {
+	if expression == "" {
+		if len(groups) > 0 {
+			return 0
+		}
 		return 1
 	}
 
 	if len(groups) == 0 {
+		if strings.ContainsRune(expression, '#') {
+			return 0
+		}
 		return 1
 	}
 
-	first_char := string(expression[0])
+	result := 0
 	current_group := groups[0]
-
-	if first_char == "?" {
-		return solve(appendAtStart(expression, "#"), groups) + solve(appendAtStart(expression, "."), groups)
-	}
-
-	if first_char == "." {
-		return solve(expression[1:], groups)
-	}
-
-	if first_char == "#" {
+	switch expression[0] {
+	case '.':
+		result += solve(expression[1:], groups)
+	case '?':
+		result += solve(expression[1:], groups) + solve(appendAtStart(expression, "#"), groups)
+	case '#':
 		if current_group > len(expression) {
-			return 0
+			break
 		}
-		for i := 0; i < current_group; i++ {
-			if string(expression[i]) == "." {
-				return solve(expression[i:], groups)
+
+		if strings.ContainsRune(expression[:current_group], '.') {
+			break
+		}
+
+		if current_group == len(expression) || expression[current_group] != '#' {
+			x := ""
+			if len(expression) >= current_group+1 {
+				x = expression[current_group+1:]
 			}
+			result += solve(x, groups[1:])
 		}
-
-		x := expression[current_group:]
-
-		if x == "" {
-			return solve(x, groups[1:])
-		}
-
-		return solve(x[1:], groups[1:])
 	}
 
-	return 0
+	return result
 }
 
 func PossibleArrangements(line string) int {
