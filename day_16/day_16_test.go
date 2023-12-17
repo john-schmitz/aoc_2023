@@ -74,13 +74,14 @@ func TestEnergized(t *testing.T) {
 			},
 		},
 		{
-			expected: 2,
+			expected: 11,
 			lines: []string{
-				"|.........",
-				"..........",
+				"\\.........",
+				"-.........",
 			},
 		},
 	}
+
 	for _, tC := range testCases {
 		t.Run(fmt.Sprintf("%s", tC.lines), func(t *testing.T) {
 			actual := energized(tC.lines)

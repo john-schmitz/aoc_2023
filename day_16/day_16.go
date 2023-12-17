@@ -20,6 +20,11 @@ func PartOne(input_file string) int {
 	return energized(lines)
 }
 
+var DOWN Point = Point{i: 1, j: 0}
+var UP Point = Point{i: -1, j: 0}
+var LEFT Point = Point{i: 0, j: -1}
+var RIGHT Point = Point{i: 0, j: 1}
+
 func energized(lines []string) int {
 	grid := map[Point]rune{}
 	unvisited := map[Point]bool{}
@@ -37,7 +42,6 @@ func energized(lines []string) int {
 	}
 
 	start := Point{i: 0, j: -1}
-	delete(unvisited, start)
 
 	vectors := []struct {
 		direction     Point
@@ -70,12 +74,12 @@ func energized(lines []string) int {
 
 			if element == '|' {
 				if previous_point.j != current_point.j {
-					vectors[index].direction = Point{1, 0}
+					vectors[index].direction = UP
 					vectors = append(vectors, struct {
 						direction     Point
 						current_point Point
 					}{
-						direction:     Point{-1, 0},
+						direction:     DOWN,
 						current_point: current_point,
 					})
 				}
@@ -87,14 +91,50 @@ func energized(lines []string) int {
 
 			if element == '-' {
 				if previous_point.i != current_point.i {
-					vectors[index].direction = Point{0, -1}
+					vectors[index].direction = LEFT
 					vectors = append(vectors, struct {
 						direction     Point
 						current_point Point
 					}{
-						direction:     Point{0, 1},
+						direction:     RIGHT,
 						current_point: current_point,
 					})
+				}
+
+				delete(unvisited, current_point)
+				vectors[index].current_point = current_point
+				continue
+			}
+
+			if element == '\\' {
+				if vector.direction == RIGHT {
+					vectors[index].direction = DOWN
+				} else if vector.direction == UP {
+					vectors[index].direction = LEFT
+				} else if vector.direction == DOWN {
+					vectors[index].direction = RIGHT
+				} else if vector.direction == LEFT {
+					vectors[index].direction = UP
+				} else {
+					panic("INVALID DIRECTION")
+				}
+
+				delete(unvisited, current_point)
+				vectors[index].current_point = current_point
+				continue
+			}
+
+			if element == '/' {
+				if vector.direction == RIGHT {
+					vectors[index].direction = UP
+				} else if vector.direction == UP {
+					vectors[index].direction = RIGHT
+				} else if vector.direction == DOWN {
+					vectors[index].direction = LEFT
+				} else if vector.direction == LEFT {
+					vectors[index].direction = DOWN
+				} else {
+					panic("INVALID DIRECTION")
 				}
 
 				delete(unvisited, current_point)
