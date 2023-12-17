@@ -30,6 +30,7 @@ func TestPartOne(t *testing.T) {
 }
 
 func TestPartTwo(t *testing.T) {
+
 	testCases := []struct {
 		input_file string
 		expected   int
@@ -40,7 +41,7 @@ func TestPartTwo(t *testing.T) {
 		},
 		{
 			input_file: "input.txt",
-			expected:   46,
+			expected:   7793,
 		},
 	}
 

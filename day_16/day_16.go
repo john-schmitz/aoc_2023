@@ -167,29 +167,6 @@ func energized(lines []string, start Point, direction Point) int {
 		}
 	}
 
-	// for i := 0; i < rows; i++ {
-	// 	row := []string{}
-	// 	for j := 0; j < cols; j++ {
-	// 		_, present := unvisited[Point{i, j}]
-	// 		var value string = "."
-	// 		if !present {
-	// 			value = "#"
-	// 		}
-
-	// 		row = append(row, value)
-	// 	}
-	// 	fmt.Println(row)
-	// }
-
-	// fmt.Println()
-	// for i := 0; i < rows; i++ {
-	// 	row := []string{}
-	// 	for j := 0; j < cols; j++ {
-	// 		row = append(row, string(grid[Point{i, j}]))
-	// 	}
-	// 	fmt.Println(row)
-	// }
-
 	return rows*cols - len(unvisited)
 }
 
