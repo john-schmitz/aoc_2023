@@ -2,6 +2,7 @@ package day_16
 
 import (
 	"bufio"
+	"fmt"
 	"math"
 	"os"
 )
@@ -16,8 +17,9 @@ func PartOne(input_file string) int {
 	if err != nil {
 		panic(err)
 	}
-
-	return energized(lines)
+	start := Point{i: 0, j: -1}
+	direction := Point{i: 0, j: 1}
+	return energized(lines, start, direction)
 }
 
 var DOWN Point = Point{i: 1, j: 0}
@@ -25,7 +27,7 @@ var UP Point = Point{i: -1, j: 0}
 var LEFT Point = Point{i: 0, j: -1}
 var RIGHT Point = Point{i: 0, j: 1}
 
-func energized(lines []string) int {
+func energized(lines []string, start Point, direction Point) int {
 	grid := map[Point]rune{}
 	unvisited := map[Point]bool{}
 	distances := map[Point]int{}
@@ -47,14 +49,12 @@ func energized(lines []string) int {
 		}
 	}
 
-	start := Point{i: 0, j: -1}
-
 	vectors := []struct {
 		direction     Point
 		current_point Point
 	}{
 		{
-			direction:     Point{i: 0, j: 1},
+			direction:     direction,
 			current_point: start,
 		},
 	}
@@ -86,6 +86,7 @@ func energized(lines []string) int {
 					index--
 					continue
 				}
+
 				if previous_point.j != current_point.j && not_visited {
 					vectors[index].direction = UP
 					vectors = append(vectors, struct {
@@ -193,7 +194,45 @@ func energized(lines []string) int {
 }
 
 func PartTwo(input_file string) int {
-	return 0
+	lines, err := getLines(input_file)
+	if err != nil {
+		panic(err)
+	}
+
+	result := math.MinInt
+
+	rows := len(lines)
+	cols := len(lines[0])
+
+	for i := 0; i < rows; i++ {
+		start := Point{i: -1, j: i}
+		if IsPointInBoard(start, rows, cols) {
+			panic(fmt.Sprintf("Starting position cannot be in grid. %v for DOWN", start))
+		}
+		result = max(result, energized(lines, start, DOWN))
+
+		start = Point{i: rows, j: i}
+		if IsPointInBoard(start, rows, cols) {
+			panic(fmt.Sprintf("Starting position cannot be in grid. %v for UP", start))
+		}
+		result = max(result, energized(lines, start, UP))
+	}
+
+	for i := 0; i < cols; i++ {
+		start := Point{i: i, j: cols}
+		if IsPointInBoard(start, rows, cols) {
+			panic(fmt.Sprintf("Starting position cannot be in grid. %v for LEFT", start))
+		}
+		result = max(result, energized(lines, start, LEFT))
+
+		start = Point{i: i, j: -1}
+		if IsPointInBoard(start, rows, cols) {
+			panic(fmt.Sprintf("Starting position cannot be in grid. %v for RIGHT", start))
+		}
+		result = max(result, energized(lines, start, RIGHT))
+	}
+
+	return result
 }
 
 func IsPointInBoard(p Point, rows int, cols int) bool {
