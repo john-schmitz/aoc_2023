@@ -32,9 +32,15 @@ func energized(lines []string) int {
 
 	rows := len(lines)
 	cols := len(lines[0])
+	visited_with_diretion := map[Point]map[Point]bool{}
 	for i := 0; i < rows; i++ {
 		for j := 0; j < cols; j++ {
 			point := Point{i: i, j: j}
+			visited_with_diretion[point] = map[Point]bool{}
+			visited_with_diretion[point][UP] = false
+			visited_with_diretion[point][DOWN] = false
+			visited_with_diretion[point][RIGHT] = false
+			visited_with_diretion[point][LEFT] = false
 			unvisited[point] = false
 			distances[point] = math.MaxInt
 			grid[point] = rune(lines[i][j])
@@ -57,6 +63,7 @@ func energized(lines []string) int {
 		for index := 0; index < len(vectors); index++ {
 			vector := vectors[index]
 			current_point := Point{i: vector.current_point.i + vector.direction.i, j: vector.current_point.j + vector.direction.j}
+
 			if !IsPointInBoard(current_point, rows, cols) {
 				vectors = append(vectors[:index], vectors[index+1:]...)
 				index--
@@ -73,7 +80,13 @@ func energized(lines []string) int {
 			}
 
 			if element == '|' {
-				if previous_point.j != current_point.j {
+				not_visited := !visited_with_diretion[current_point][vector.direction]
+				if !not_visited {
+					vectors = append(vectors[:index], vectors[index+1:]...)
+					index--
+					continue
+				}
+				if previous_point.j != current_point.j && not_visited {
 					vectors[index].direction = UP
 					vectors = append(vectors, struct {
 						direction     Point
@@ -84,13 +97,21 @@ func energized(lines []string) int {
 					})
 				}
 
+				visited_with_diretion[current_point][vector.direction] = true
 				delete(unvisited, current_point)
 				vectors[index].current_point = current_point
 				continue
 			}
 
 			if element == '-' {
-				if previous_point.i != current_point.i {
+				not_visited := !visited_with_diretion[current_point][vector.direction]
+				if !not_visited {
+					vectors = append(vectors[:index], vectors[index+1:]...)
+					index--
+					continue
+				}
+
+				if previous_point.i != current_point.i && not_visited {
 					vectors[index].direction = LEFT
 					vectors = append(vectors, struct {
 						direction     Point
@@ -101,6 +122,7 @@ func energized(lines []string) int {
 					})
 				}
 
+				visited_with_diretion[current_point][vector.direction] = true
 				delete(unvisited, current_point)
 				vectors[index].current_point = current_point
 				continue
@@ -143,6 +165,29 @@ func energized(lines []string) int {
 			}
 		}
 	}
+
+	// for i := 0; i < rows; i++ {
+	// 	row := []string{}
+	// 	for j := 0; j < cols; j++ {
+	// 		_, present := unvisited[Point{i, j}]
+	// 		var value string = "."
+	// 		if !present {
+	// 			value = "#"
+	// 		}
+
+	// 		row = append(row, value)
+	// 	}
+	// 	fmt.Println(row)
+	// }
+
+	// fmt.Println()
+	// for i := 0; i < rows; i++ {
+	// 	row := []string{}
+	// 	for j := 0; j < cols; j++ {
+	// 		row = append(row, string(grid[Point{i, j}]))
+	// 	}
+	// 	fmt.Println(row)
+	// }
 
 	return rows*cols - len(unvisited)
 }

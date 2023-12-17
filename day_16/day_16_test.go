@@ -14,6 +14,10 @@ func TestPartOne(t *testing.T) {
 			input_file: "sample.txt",
 			expected:   46,
 		},
+		{
+			input_file: "input.txt",
+			expected:   7562,
+		},
 	}
 
 	for _, tC := range testCases {
@@ -21,6 +25,31 @@ func TestPartOne(t *testing.T) {
 			actual := PartOne(tC.input_file)
 			if actual != tC.expected {
 				t.Errorf("Expected PartOne(%s) = %d. Got %d", tC.input_file, tC.expected, actual)
+			}
+		})
+	}
+}
+
+func TestPartTwo(t *testing.T) {
+	testCases := []struct {
+		input_file string
+		expected   int
+	}{
+		{
+			input_file: "sample.txt",
+			expected:   46,
+		},
+		{
+			input_file: "input.txt",
+			expected:   46,
+		},
+	}
+
+	for _, tC := range testCases {
+		t.Run(tC.input_file, func(t *testing.T) {
+			actual := PartTwo(tC.input_file)
+			if actual != tC.expected {
+				t.Errorf("Expected PartTwo(%s) = %d. Got %d", tC.input_file, tC.expected, actual)
 			}
 		})
 	}
@@ -78,6 +107,28 @@ func TestEnergized(t *testing.T) {
 			lines: []string{
 				"\\.........",
 				"-.........",
+			},
+		},
+		{
+			expected: 19,
+			lines: []string{
+				"...\\.\\...-",
+				"...-.....|",
+			},
+		},
+		{
+			expected: 4,
+			lines: []string{
+				"|\\",
+				"\\/",
+			},
+		},
+		{
+			expected: 4,
+			lines: []string{
+				"|\\",
+				"-/",
+				"..",
 			},
 		},
 	}
