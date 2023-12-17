@@ -36,35 +36,75 @@ func energized(lines []string) int {
 		}
 	}
 
-	start := Point{i: 0, j: 0}
-	distances[start] = 0
+	start := Point{i: 0, j: -1}
+	delete(unvisited, start)
 
-	current_point := start
-	for {
-		point := Point{i: current_point.i, j: current_point.j + 1}
-		if !IsPointInBoard(point, rows, cols) {
-			break
-		}
-		_, present := unvisited[point]
+	vectors := []struct {
+		direction     Point
+		current_point Point
+	}{
+		{
+			direction:     Point{i: 0, j: 1},
+			current_point: start,
+		},
+	}
 
-		if present {
-			current_distance := distances[current_point]
-			new_distance := current_distance + 1
-			point_distance := distances[point]
-
-			if new_distance < point_distance {
-				distances[point] = new_distance
+	for len(vectors) > 0 {
+		for index := 0; index < len(vectors); index++ {
+			vector := vectors[index]
+			current_point := Point{i: vector.current_point.i + vector.direction.i, j: vector.current_point.j + vector.direction.j}
+			if !IsPointInBoard(current_point, rows, cols) {
+				vectors = append(vectors[:index], vectors[index+1:]...)
+				index--
+				continue
 			}
-		}
 
-		delete(unvisited, current_point)
-		current_point = next_point_unvisited(unvisited, distances)
-		if !IsPointInBoard(current_point, rows, cols) {
-			break
+			element := grid[current_point]
+			previous_point := Point{i: current_point.i + (-1 * vector.direction.i), j: current_point.j + (-1 * vector.direction.j)}
+
+			if element == '.' {
+				delete(unvisited, current_point)
+				vectors[index].current_point = current_point
+				continue
+			}
+
+			if element == '|' {
+				if previous_point.j != current_point.j {
+					vectors[index].direction = Point{1, 0}
+					vectors = append(vectors, struct {
+						direction     Point
+						current_point Point
+					}{
+						direction:     Point{-1, 0},
+						current_point: current_point,
+					})
+				}
+
+				delete(unvisited, current_point)
+				vectors[index].current_point = current_point
+				continue
+			}
+
+			if element == '-' {
+				if previous_point.i != current_point.i {
+					vectors[index].direction = Point{0, -1}
+					vectors = append(vectors, struct {
+						direction     Point
+						current_point Point
+					}{
+						direction:     Point{0, 1},
+						current_point: current_point,
+					})
+				}
+
+				delete(unvisited, current_point)
+				vectors[index].current_point = current_point
+				continue
+			}
 		}
 	}
 
-	return rows*cols - len(unvisited) + 1
+	return rows*cols - len(unvisited)
 }
 
 func PartTwo(input_file string) int {
@@ -73,23 +113,6 @@ func PartTwo(input_file string) int {
 
 func IsPointInBoard(p Point, rows int, cols int) bool {
 	return p.i >= 0 && p.j >= 0 && p.i < rows && p.j < cols
-}
-
-func next_point_unvisited(unvisited map[Point]bool, distances map[Point]int) Point {
-	min_distance := math.MaxInt
-	min_i := -1
-	min_j := -1
-
-	for point := range unvisited {
-		distance := distances[point]
-		if distance < min_distance {
-			min_distance = distance
-			min_i = point.i
-			min_j = point.j
-		}
-	}
-
-	return Point{min_i, min_j}
 }
 
 func getLines(input_file string) ([]string, error) {
