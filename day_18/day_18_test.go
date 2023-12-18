@@ -5,9 +5,7 @@ import (
 	"testing"
 )
 
-
-
-func Test(t *testing.T) {
+func TestAreaPoints(t *testing.T) {
 	testCases := []struct {
 		input    []Point
 		expected int
@@ -40,6 +38,47 @@ func Test(t *testing.T) {
 	}
 }
 
+func Test(t *testing.T) {
+	testCases := []struct {
+		desc      string
+		length    int
+		direction string
+	}{
+		{
+			desc:      "#70c710",
+			length:    461937,
+			direction: "R",
+		},
+		{
+			desc:      "#0dc571",
+			length:    56407,
+			direction: "D",
+		},
+		{
+			desc:      "#caa173",
+			length:    829975,
+			direction: "U",
+		},
+		{
+			desc:      "#8ceee2",
+			length:    577262,
+			direction: "L",
+		},
+	}
+	for _, tC := range testCases {
+		t.Run(tC.desc, func(t *testing.T) {
+			direction, length := convertHexToInstruction(tC.desc)
+			if length != tC.length {
+				t.Errorf("Expected convertHexToInstruction(%s) to have length %d. Got %d", tC.desc, tC.length, length)
+			}
+
+			if direction != tC.direction {
+				t.Errorf("Expected convertHexToInstruction(%s) to have direction %s. Got %s", tC.desc, tC.direction, direction)
+			}
+		})
+	}
+}
+
 func TestPartOne(t *testing.T) {
 	testCases := []struct {
 		input_file string
@@ -48,6 +87,10 @@ func TestPartOne(t *testing.T) {
 		{
 			input_file: "sample.txt",
 			expected:   62,
+		},
+		{
+			input_file: "input.txt",
+			expected:   47675,
 		},
 	}
 
@@ -68,7 +111,11 @@ func TestPartTwo(t *testing.T) {
 	}{
 		{
 			input_file: "sample.txt",
-			expected:   62,
+			expected:   952408144115,
+		},
+		{
+			input_file: "input.txt",
+			expected:   122103860427465,
 		},
 	}
 
