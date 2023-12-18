@@ -12,46 +12,49 @@ type Point struct {
 	j int
 }
 
+func (point Point) ManhattanDistance(p2 Point) int {
+	manhattan_i := p2.i - point.i
+	manhattan_j := p2.j - point.j
+
+	if manhattan_i < 0 {
+		manhattan_i = -manhattan_i
+	}
+
+	if manhattan_j < 0 {
+		manhattan_j = -manhattan_j
+	}
+
+	return manhattan_i + manhattan_j
+}
+
 func solve(file_path string, increments int) int {
-	acc := 0
+	totalDistance := 0
 	lines, _ := getLines(file_path)
 	galaxies := transposeBoard(lines, increments)
 
 	distances_map := map[string]int{}
 
-	for _, galaxy := range galaxies {
-		for _, galaxy_ := range galaxies {
-			if galaxy_ == galaxy {
+	for _, from := range galaxies {
+		for _, to := range galaxies {
+			if to == from {
 				continue
 			}
-			key := fmt.Sprintf("%d:%d|%d:%d", galaxy.i, galaxy.j, galaxy_.i, galaxy_.j)
+			key := fmt.Sprintf("%d:%d|%d:%d", from.i, from.j, to.i, to.j)
 
 			_, present := distances_map[key]
 			if present {
 				continue
 			}
-			key = fmt.Sprintf("%d:%d|%d:%d", galaxy_.i, galaxy_.j, galaxy.i, galaxy.j)
+			key = fmt.Sprintf("%d:%d|%d:%d", to.i, to.j, from.i, from.j)
 			_, present = distances_map[key]
 			if present {
 				continue
 			}
-
-			manhattan_i := galaxy.i - galaxy_.i
-			manhattan_j := galaxy.j - galaxy_.j
-
-			if manhattan_i < 0 {
-				manhattan_i = -manhattan_i
-			}
-
-			if manhattan_j < 0 {
-				manhattan_j = -manhattan_j
-			}
-
-			acc += manhattan_i + manhattan_j
+			totalDistance += from.ManhattanDistance(to)
 		}
 	}
 
-	return acc / 2
+	return totalDistance / 2
 }
 
 func PartOne(file_path string) int {
@@ -118,7 +121,6 @@ func transposeBoard(lines []string, increment int) []Point {
 			}
 		}
 	}
-	fmt.Println("Found galaxies: ", len(galaxies))
 
 	return galaxies
 }
