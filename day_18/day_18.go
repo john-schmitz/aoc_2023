@@ -53,19 +53,67 @@ func PartOne(input_path string) int {
 		current_point = new_point
 	}
 
-	points = append(points, Point{
-		i: 0, j: 0,
-	})
-
 	slices.Reverse(points)
-	fmt.Println(points, len(points))
-	return areaPoints(points) + perimeter(points)
+	return areaPoints(points) + 1 + (perimeter(points))/2
 }
 
 func PartTwo(input_path string) int {
-	return 0
+	lines, err := getLines(input_path)
+	if err != nil {
+		panic(err)
+	}
+
+	points := []Point{
+		{
+			i: 0, j: 0,
+		},
+	}
+
+	current_point := Point{
+		i: 0, j: 0,
+	}
+
+	for _, line := range lines {
+		splited := strings.Split(line, " ")
+		direction_s, length := convertHexToInstruction(splited[2][1:][:7])
+		direction := GetDirection(direction_s)
+		new_point := Point{
+			i: current_point.i + (length * direction.i),
+			j: current_point.j + (length * direction.j),
+		}
+
+		points = append(points, new_point)
+		current_point = new_point
+	}
+
+	slices.Reverse(points)
+	return areaPoints(points) + 1 + (perimeter(points))/2
 }
 
+func convertHexToInstruction(hex string) (direction string, length int) {
+
+	hexadecimal_num := hex[1:6]
+	decimal_num, err := strconv.ParseInt(hexadecimal_num, 16, 64)
+
+	if err != nil {
+		panic(err)
+	}
+
+	var direction_result string
+
+	switch hex[len(hex)-1:] {
+	case "0":
+		direction_result = "R"
+	case "1":
+		direction_result = "D"
+	case "2":
+		direction_result = "L"
+	case "3":
+		direction_result = "U"
+	}
+
+	return direction_result, int(decimal_num)
+}
 func GetDirection(s string) Point {
 	if s == "R" {
 		return RIGHT

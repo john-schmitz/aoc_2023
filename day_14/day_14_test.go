@@ -13,7 +13,7 @@ func TestPartOne(t *testing.T) {
 		},
 		{
 			file_path: "input.txt",
-			expected:  136,
+			expected:  108955,
 		},
 	}
 	for _, tC := range testCases {
